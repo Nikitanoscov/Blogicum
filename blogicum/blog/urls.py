@@ -6,9 +6,29 @@ app_name = 'blog'
 
 urlpatterns = [
     path(
-        'posts/<int:pk>/',
+        '',
+        views.BlogListView.as_view(),
+        name='index'
+    ),
+    path(
+        'posts/<int:post_id>/',
         views.PostDetail.as_view(),
         name='post_detail'
+    ),
+    path(
+        'posts/create/',
+        views.PostCreate.as_view(),
+        name='create_post'
+    ),
+    path(
+        'posts/<int:post_id>/delete/',
+        views.PostDelete.as_view(),
+        name='delete_post'
+    ),
+    path(
+        'posts/<int:post_id>/edit/',
+        views.PostUpdate.as_view(),
+        name='edit_post'
     ),
     path(
         'posts/<int:pk>/comment/',
@@ -26,28 +46,18 @@ urlpatterns = [
         name='delete_comment'
     ),
     path(
-        'profile/<str:username>/',
+        'profile/edit/',
+        views.profile_update,
+        name='edit_profile'
+    ),
+    path(
+        'profile/<str:slug>/',
         views.Profile.as_view(),
         name='profile'
     ),
     path(
-        'category/<slug:category_slug>/',
-        views.category_posts,
+        'category/<slug:slug>/',
+        views.CategoryList.as_view(),
         name='category_posts'
     ),
-    path(
-        '',
-        views.BlogListView.as_view(),
-        name='index'
-    ),
-    path(
-        'posts/create/',
-        views.PostCreate.as_view(),
-        name='create_post'
-    ),
-    path(
-        'profile/edit/',
-        views.ProfileUpdate.as_view(),
-        name='edit_profile'
-    )
 ]

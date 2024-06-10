@@ -1,11 +1,11 @@
 from django.urls import path
 
-from pages.views import about, rules
+from . import views
 
 
 app_name = 'pages'
 
 urlpatterns = [
-    path('about/', about, name='about'),
-    path('rules/', rules, name='rules')
+    path('about/', views.AboutView.as_view(), name='about'),
+    path('rules/', views.RulesView.as_view(), name='rules')
 ]
