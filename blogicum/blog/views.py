@@ -241,4 +241,3 @@ class CategoryList(ListView):
             slug=self.kwargs['slug']
         )
         return context
-
