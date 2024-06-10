@@ -20,5 +20,3 @@ class AboutView(TemplateView):
 
 class RulesView(TemplateView):
     template_name = 'pages/rules.html'
-
-

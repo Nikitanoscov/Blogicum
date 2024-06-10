@@ -84,30 +84,6 @@ class Profile(ListView):
         return context
 
 
-class ProfileUpdate(OnlyAuthorMixin, UpdateView):
-    model = User
-    form_class = ProfileForm
-    template_name = 'blog/user.html'
-
-    def get_object(self, queryset=None):
-        return self.request.user
-
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        context = super().get_context_data(**kwargs)
-        context["form"] = ProfileForm(
-            self.request.POST or None,
-            instance=self.get_object()
-        )
-        return context
-
-    def form_valid(self, form):
-        context = self.get_context_data()
-        form = context['form']
-        if form.is_valid():
-            form.save()
-        return super().form_valid(form)
-
-
 def profile_update(request):
     instance = get_object_or_404(User, username=request.user.username)
     form = ProfileForm(
@@ -256,7 +232,7 @@ class CategoryList(ListView):
             comment_count=Count('comments')
         ).order_by('-pub_date')
         return queryset
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = get_object_or_404(
@@ -266,23 +242,3 @@ class CategoryList(ListView):
         )
         return context
 
-
-def post_detail(request, post_id):
-    post = get_object_or_404(
-        filter_posts(Post.objects), pk=post_id
-    )
-    return render(request, 'blog/detail.html', context={'post': post})
-
-
-def category_posts(request, category_slug):
-    category = get_object_or_404(
-        Category,
-        is_published=True,
-        slug=category_slug
-    )
-    post_list = filter_posts(category.posts.all())
-    return render(
-        request,
-        'blog/category.html',
-        context={'category': category, 'page_obj': post_list}
-    )
