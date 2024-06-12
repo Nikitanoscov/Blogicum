@@ -1,17 +1,27 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
-from .models import Category, Location, Post
+from .models import Category, Comment, Location, Post
 
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
+    def image_tag(self):
+        if self.image:
+            return mark_safe(
+                f'<url src={self.image.url} width="80" height="60">'
+            )
+        else:
+            return None
+
     list_display = (
         'title',
         'text',
+        'image',
         'pub_date',
         'author',
         'location',
-        'category'
+        'category',
     )
     list_editable = (
         'category',
@@ -50,4 +60,15 @@ class LocationAdmin(admin.ModelAdmin):
     )
     list_filter = (
         'name',
+    )
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'text',
+        'post'
+    )
+    list_filter = (
+        'post',
     )

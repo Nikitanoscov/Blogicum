@@ -1,11 +1,48 @@
 from django.db import models
+from django.db.models.query import QuerySet
 from django.contrib.auth import get_user_model
+from django.utils.timezone import now
 
 from core.models import CreateAtModel, IsPublishedModel
 from .const_for_blog import MAX_LENGTH, OUTPUT_LENGTH
 
 
 User = get_user_model()
+
+
+class PostManager(models.Manager):
+
+    def get_queryset(self):
+        return PostQuerySet(self.model)
+
+    def published(self):
+        return self.get_queryset().published()
+
+    def count_comment(self):
+        return self.get_queryset().count_comment()
+
+    def ordering(self):
+        return self.get_queryset().ordering()
+
+
+class PostQuerySet(QuerySet):
+
+    def published(self):
+        return self.select_related(
+            'author', 'category', 'location'
+        ).filter(
+            is_published=True,
+            category__is_published=True,
+            pub_date__lte=now()
+        )
+
+    def count_comment(self):
+        return self.annotate(
+            comment_count=models.Count('comments')
+        )
+    
+    def ordering(self):
+        return self.order_by('-pub_date')
 
 
 class Category(CreateAtModel, IsPublishedModel):
@@ -78,6 +115,8 @@ class Post(CreateAtModel, IsPublishedModel):
     )
     image = models.ImageField('Фото', upload_to='blog_images', blank=True)
 
+    objects = PostManager()
+
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
@@ -87,20 +126,25 @@ class Post(CreateAtModel, IsPublishedModel):
         return self.title[:OUTPUT_LENGTH]
 
 
-class Comment(models.Model):
+class Comment(CreateAtModel):
     text = models.TextField('Текст комментария')
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
-        related_name='comments'
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True
+        related_name='comments',
+        verbose_name='Коментарий'
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='comments',
+        verbose_name='Автор'
     )
 
-    class Meta:
-        ordering = ('created_at',)
+    class Meta(CreateAtModel.Meta):
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self) -> str:
+        return self.text[:OUTPUT_LENGTH]
+
