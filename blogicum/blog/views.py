@@ -1,7 +1,6 @@
 from typing import Any
 
 from django.contrib.auth import get_user_model
-from django.db.models.base import Model as Model
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import (
