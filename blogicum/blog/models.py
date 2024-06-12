@@ -147,4 +147,3 @@ class Comment(CreateAtModel):
 
     def __str__(self) -> str:
         return self.text[:OUTPUT_LENGTH]
-
