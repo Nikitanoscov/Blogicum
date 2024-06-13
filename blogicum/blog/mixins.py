@@ -18,7 +18,6 @@ class OnlyAuthorMixin(UserPassesTestMixin):
 
 class PostMixin(LoginRequiredMixin, OnlyAuthorMixin):
     model = Post
-    form_class = PostForm
     template_name = 'blog/create.html'
     pk_url_kwarg = 'post_id'
 
@@ -38,7 +37,6 @@ class PostMixin(LoginRequiredMixin, OnlyAuthorMixin):
 
 class CommentMixin(LoginRequiredMixin):
     model = Comment
-    form_class = CommentForm
     template_name = 'blog/comment.html'
     pk_url_kwarg = 'comment_id'
 

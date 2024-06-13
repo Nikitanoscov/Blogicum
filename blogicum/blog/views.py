@@ -78,6 +78,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
 
 
 class PostUpdate(PostMixin, UpdateView):
+    form_class = PostForm
 
     def get_success_url(self) -> str:
         return reverse('blog:post_detail', args=[self.object.id])
@@ -112,6 +113,7 @@ class PostDetail(ListView):
 
 
 class CommentCreate(CommentMixin, CreateView):
+    form_class = CommentForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -120,14 +122,13 @@ class CommentCreate(CommentMixin, CreateView):
 
 
 class CommentUpdate(CommentMixin, OnlyAuthorMixin, UpdateView):
-    pass
+    form_class = CommentForm
 
 
 class CommentDelete(CommentMixin, OnlyAuthorMixin, DeleteView):
-    pass
-    # def get_context_data(self, **kwargs):
-    #     context = None
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = None
+        return context
 
 
 class CategoryList(ListView):
