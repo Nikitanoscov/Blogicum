@@ -2,7 +2,7 @@ from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import redirect
 from django.urls import reverse
 
 
@@ -18,6 +18,7 @@ class OnlyAuthorMixin(UserPassesTestMixin):
 
 class PostMixin(LoginRequiredMixin, OnlyAuthorMixin):
     model = Post
+    form_class = PostForm
     template_name = 'blog/create.html'
     pk_url_kwarg = 'post_id'
 
@@ -37,6 +38,7 @@ class PostMixin(LoginRequiredMixin, OnlyAuthorMixin):
 
 class CommentMixin(LoginRequiredMixin):
     model = Comment
+    form_class = CommentForm
     template_name = 'blog/comment.html'
     pk_url_kwarg = 'comment_id'
 
