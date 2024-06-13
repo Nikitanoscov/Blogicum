@@ -10,39 +10,23 @@ from .const_for_blog import MAX_LENGTH, OUTPUT_LENGTH
 User = get_user_model()
 
 
-class PostManager(models.Manager):
-
-    def get_queryset(self):
-        return PostQuerySet(self.model)
-
-    def published(self):
-        return self.get_queryset().published()
-
-    def count_comment(self):
-        return self.get_queryset().count_comment()
-
-    def ordering(self):
-        return self.get_queryset().ordering()
-
-
 class PostQuerySet(QuerySet):
 
     def published(self):
-        return self.select_related(
-            'author', 'category', 'location'
-        ).filter(
+        return self.filter(
             is_published=True,
             category__is_published=True,
             pub_date__lte=now()
         )
 
     def count_comment(self):
-        return self.annotate(
+        return self.select_related(
+            'author', 'category', 'location'
+        ).order_by(
+            '-pub_date'
+        ).annotate(
             comment_count=models.Count('comments')
         )
-
-    def ordering(self):
-        return self.order_by('-pub_date')
 
 
 class Category(CreateAtModel, IsPublishedModel):
@@ -115,7 +99,7 @@ class Post(CreateAtModel, IsPublishedModel):
     )
     image = models.ImageField('Фото', upload_to='blog_images', blank=True)
 
-    objects = PostManager()
+    objects = PostQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'публикация'
@@ -132,7 +116,7 @@ class Comment(CreateAtModel):
         Post,
         on_delete=models.CASCADE,
         related_name='comments',
-        verbose_name='Коментарий'
+        verbose_name='Пост'
     )
     author = models.ForeignKey(
         User,

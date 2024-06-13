@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
-from . import views
+from blog.views import RegistrationCreate
 
 handler404 = 'pages.views.page_not_found'
 
@@ -18,7 +18,7 @@ urlpatterns = [
     path('auth/', include('django.contrib.auth.urls')),
     path(
         'auth/registration/',
-        views.RegistrationCreate.as_view(),
+        RegistrationCreate.as_view(),
         name='registration'
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

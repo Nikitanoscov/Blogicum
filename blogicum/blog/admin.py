@@ -1,23 +1,17 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 
 from .models import Category, Comment, Location, Post
 
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    def image_tag(self):
-        if self.image:
-            return mark_safe(
-                f'<url src={self.image.url} width="80" height="60">'
-            )
-        else:
-            return None
 
     list_display = (
         'title',
         'text',
-        'image',
+        'image_tag',
         'pub_date',
         'author',
         'location',
@@ -33,6 +27,14 @@ class PostAdmin(admin.ModelAdmin):
         'category',
         'pub_date',
     )
+
+    @admin.display(description='Изображение')
+    def image_tag(self, post: Post):
+        if post.image:
+            return mark_safe(
+                f'<img src={post.image.url} width="80" height="60">'
+            )
+        return 'Без фото'
 
 
 @admin.register(Category)
