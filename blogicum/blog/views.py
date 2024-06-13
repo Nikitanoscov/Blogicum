@@ -122,6 +122,7 @@ class CommentCreate(CommentMixin, CreateView):
 class CommentUpdate(CommentMixin, OnlyAuthorMixin, UpdateView):
     pass
 
+
 class CommentDelete(CommentMixin, OnlyAuthorMixin, DeleteView):
     pass
 
