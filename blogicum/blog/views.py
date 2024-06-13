@@ -73,7 +73,7 @@ class PostCreate(LoginRequiredMixin, CreateView):
         form.instance.author = self.request.user
         return super().form_valid(form)
 
-    def get_success_url(self) -> str: 
+    def get_success_url(self) -> str:
         return reverse('blog:profile', args=[self.request.user.username])
 
 
