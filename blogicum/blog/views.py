@@ -1,4 +1,5 @@
 from typing import Any
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -95,18 +96,18 @@ class PostDetail(ListView):
     paginate_by = CONST_PAGINATE
 
     def get_object(self):
-        return get_object_or_404(Post, pk=self.kwargs['post_id'])
+        post = get_object_or_404(Post, pk=self.kwargs[self.pk_url_kwarg])
+        if self.request.user != post.author:
+            queryset = Post.objects.published()
+            return get_object_or_404(queryset, pk=self.kwargs['post_id'])
+        return post
 
     def get_queryset(self) -> QuerySet[Any]:
         return self.get_object().comments.select_related('author')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post = self.get_object()
-        if self.request.user != post.author:
-            queryset = Post.objects.published()
-            post = get_object_or_404(queryset, pk=self.kwargs['post_id'])
-        context['post'] = post
+        context['post'] = self.get_object()
         context['form'] = CommentForm()
         return context
 
@@ -134,8 +135,9 @@ class CategoryList(ListView):
 
     def get_object(self):
         return get_object_or_404(
-            Category.objects.filter(is_published=True),
-            slug=self.kwargs['category_slug']
+            Category,
+            slug=self.kwargs['category_slug'],
+            is_published=True
         )
 
     def get_queryset(self):
